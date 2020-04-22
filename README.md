@@ -35,7 +35,20 @@ keyword_song = make_keyword_lf(keywords=["song"], label=HAM)
 ```
 
 ### Generators
-Labeling functions may be generated using programmatic methods. We’ve explored this in a number of settings — from automatically-generated labeling functions ([Varma et. al 2019](http://www.vldb.org/pvldb/vol12/p223-varma.pdf)) to natural language interfaces for parsing labeling functions ([Hancock et. al 2018](https://arxiv.org/pdf/1805.03818.pdf)).
+Labeling functions may be generated using programmatic methods. We’ve explored this in a number of settings — from automatically-generated labeling functions ([Varma et. al 2019](http://www.vldb.org/pvldb/vol12/p223-varma.pdf)) to natural language interfaces for parsing labeling functions ([Hancock et. al 2018](https://arxiv.org/pdf/1805.03818.pdf)). In the [Crowdsourcing Tutorial](https://www.snorkel.org/use-cases/crowdsourcing-tutorial), we show a generator that produces a labeling function for each crowdworker:
+```python
+def worker_lf(x, worker_dict):
+    return worker_dict.get(x.tweet_id, ABSTAIN)
+
+
+def make_worker_lf(worker_id):
+    worker_dict = worker_dicts[worker_id]
+    name = f"worker_{worker_id}"
+    return LabelingFunction(name, f=worker_lf, resources={"worker_dict": worker_dict})
+
+
+worker_lfs = [make_worker_lf(worker_id) for worker_id in worker_dicts]
+```
 
 ### Primitives
 For certain use cases, it's helpful to generate primitives, or basic features, over the underlying data for Snorkel operators to access. This is especially important for non-textual data modalities, as we’ve shown in work across medical imaging ([Fries et. al, 2019](https://www.nature.com/articles/s41467-019-11012-3))  and computer vision ([Chen et. al 2019](https://arxiv.org/abs/1904.11622)).
